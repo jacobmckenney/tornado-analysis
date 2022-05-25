@@ -7,7 +7,7 @@ import geopandas as gpd
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 
 
-def plot_magnitudes(tornadoes):
+def plot_magnitudes(tornadoes, states):
     tornado_census = dp.tornado_census_by_year(ALL_VALID_YEARS, tornadoes)
     dp.add_start_end_points(tornado_census)
 
@@ -16,13 +16,33 @@ def plot_magnitudes(tornadoes):
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
 
-    states = dp.import_state_geometries()
     states.plot(ax=ax, color="#EEEEEE", edgecolor='black')
 
     geo_tornadoes = gpd.GeoDataFrame(data=tornado_census, geometry='start_point')
     geo_tornadoes.plot(ax=ax, column='mag', legend=True, markersize=tornado_census['mag'], vmin=0, vmax=5)
     tornado_census.to_csv('data/joined.csv')
-    plt.savefig('figures/2009-2019_magnitudes.png')
+    plt.savefig('figures/magnitudes_2009-2019.png')
+
+def plot_tornadoes_by_state(tornadoes: gpd.GeoDataFrame, states: pd.DataFrame):
+    fig, [ax1, ax2] = plt.subplots(2, figsize=(10, 10))
+    ax1.set_title('Tornados per State in the U.S. (1950-2020)')
+    ax2.set_title('Tornados per Sq Mile by State in the U.S. (1950-2020)') # CHECK
+    states.plot(ax=ax1, color='#EEEEEE', edgecolor='black')
+    states.plot(ax=ax2, color='#EEEEEE', edgecolor='black')
+    tornadoes['count'] = tornadoes['yr']
+    tornadoes = tornadoes[['stf', 'count']]
+    tornado_state_counts = tornadoes.groupby(by='stf').count()
+    states['STATE'] = states['STATE'].apply(lambda x: int(x))
+    # Merge counts of tornadoes per state into state data to be plotted
+    merged = states.merge(right=tornado_state_counts, how='left', left_on='STATE', right_on='stf')
+    merged.plot(ax=ax1, column='count', legend=True)
+    merged_normalized = gpd.GeoDataFrame(merged)
+    #CHECK IF CENSUSAREA = STATE AREA
+    merged_normalized['normalized_count'] = merged['count'] / merged['CENSUSAREA']
+    merged_normalized.plot(ax=ax2, column='normalized_count', legend=True)
+    plt.savefig('figures/tornado_count_1950-2020.png')
+
+
 
 def most_in_year(tornadoes: pd.DataFrame):
     filtered = tornadoes[['yr', 'mo', 'dy']]
@@ -32,14 +52,18 @@ def most_in_year(tornadoes: pd.DataFrame):
     return (max_year, max_in_year)
 
 def most_likely_day(tornadoes: pd.DataFrame):
+    fig, ax = plt.subplots(1)
+    tornadoes.plot(ax=ax)
+    plt.savefig('figures/test.png')
     pass
 
 def main(run_all):
     tornadoes = dp.import_tornado_data()
-    print(tornadoes)
+    states = dp.import_state_geometries()
+    plot_tornadoes_by_state(tornadoes, states)
     print(most_in_year(tornadoes))
     if run_all:
-        plot_magnitudes(tornadoes)
+        plot_magnitudes(tornadoes, states)
 
 if __name__ == '__main__':
-    main(True)
+    main(False)
