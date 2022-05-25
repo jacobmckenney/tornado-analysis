@@ -1,8 +1,8 @@
-from tokenize import group
 import dataprocessing as dp
 import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
+import seaborn as sns
 
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 
@@ -51,18 +51,27 @@ def most_in_year(tornadoes: pd.DataFrame):
     max_in_year = grouped.max()
     return (max_year, max_in_year)
 
-def most_likely_day(tornadoes: pd.DataFrame):
-    fig, ax = plt.subplots(1)
-    tornadoes.plot(ax=ax)
-    plt.savefig('figures/test.png')
-    pass
+def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
+    tornadoes = pd.DataFrame(df)
+    tornadoes['count'] = tornadoes['yr']
+    tornadoes = tornadoes[['count']]
+    monthly_tornadoes = tornadoes.groupby(index).count()
+    monthly_tornadoes.plot()
+    sns.relplot(data=monthly_tornadoes, x='date', y='count', kind='line')
+    plt.xlabel(timeperiod)
+    plt.savefig(f'figures/{figname}.png', bbox_inches='tight')
+
+
 
 def main(run_all):
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
-    plot_tornadoes_by_state(tornadoes, states)
-    print(most_in_year(tornadoes))
+    most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
+    most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
+    most_likely_time_period(tornadoes.index.day, 'day', 'daily', tornadoes) # DOES DAY OF MONTH INSTEAD OF YEAR
     if run_all:
+        plot_tornadoes_by_state(tornadoes, states)
+        print(most_in_year(tornadoes))
         plot_magnitudes(tornadoes, states)
 
 if __name__ == '__main__':
