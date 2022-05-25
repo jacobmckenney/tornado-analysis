@@ -27,19 +27,16 @@ def plot_tornadoes_by_state(tornadoes: gpd.GeoDataFrame, states: pd.DataFrame):
     fig, [ax1, ax2] = plt.subplots(2, figsize=(10, 10))
     ax1.set_title('Tornados per State in the U.S. (1950-2020)')
     ax2.set_title('Tornados per Sq Mile by State in the U.S. (1950-2020)') # CHECK
-    states.plot(ax=ax1, color='#EEEEEE', edgecolor='black')
-    states.plot(ax=ax2, color='#EEEEEE', edgecolor='black')
     tornadoes['count'] = tornadoes['yr']
     tornadoes = tornadoes[['stf', 'count']]
     tornado_state_counts = tornadoes.groupby(by='stf').count()
     states['STATE'] = states['STATE'].apply(lambda x: int(x))
     # Merge counts of tornadoes per state into state data to be plotted
     merged = states.merge(right=tornado_state_counts, how='left', left_on='STATE', right_on='stf')
-    merged.plot(ax=ax1, column='count', legend=True)
-    merged_normalized = gpd.GeoDataFrame(merged)
     #CHECK IF CENSUSAREA = STATE AREA
-    merged_normalized['normalized_count'] = merged['count'] / merged['CENSUSAREA']
-    merged_normalized.plot(ax=ax2, column='normalized_count', legend=True)
+    merged['normalized_count'] = merged['count'] / merged['CENSUSAREA']
+    merged.plot(ax=ax1, column='count', legend=True)
+    merged.plot(ax=ax2, column='normalized_count', legend=True)
     plt.savefig('figures/tornado_count_1950-2020.png')
 
 
@@ -69,8 +66,8 @@ def main(run_all):
     most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
     most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
     most_likely_time_period(tornadoes.index.day, 'day', 'daily', tornadoes) # DOES DAY OF MONTH INSTEAD OF YEAR
+    plot_tornadoes_by_state(tornadoes, states)
     if run_all:
-        plot_tornadoes_by_state(tornadoes, states)
         print(most_in_year(tornadoes))
         plot_magnitudes(tornadoes, states)
 
