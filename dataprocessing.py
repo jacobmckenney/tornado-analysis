@@ -2,13 +2,12 @@ from census import Census
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
-import matplotlib.pyplot as plt
+
 
 
 TORNADO_FILE = 'data/1950-2020_all_tornadoes.csv'
 STATE_FILE = 'data/gz_2010_us_040_00_5m.json'
 API_KEY = 'd3687e22fcd51ce480482a5caa07e0ae239c77a5'
-ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 
 
 def retrieve_census_data(c: Census, year) -> pd.DataFrame:
@@ -50,11 +49,10 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame) -> pd.DataFrame:
         if result is None:
             result = joined
         else:
-            pd.concat([result, joined], axis=0)
-        print(year)
+            result = pd.concat([result, joined], axis=0)
     return result
 
-def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True):
+def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True, years=None):
     data = pd.read_csv(TORNADO_FILE)
     data['stf'] = data['stf'].apply(lambda x: int(x))
     data['f1'] = data['f1'].apply(lambda x: int(x))
@@ -81,24 +79,11 @@ def add_start_end_points(df):
     df['start_point'] = [Point(lon, lat) for (lon, lat) in zip(df['slon'], df['slat'])]
     df['end_point'] = [Point(lon, lat) for (lon, lat) in zip(df['elon'], df['elat'])]
 
-def get_processed_data():
-    tornadoes = import_tornado_data()
-    tornado_census = tornado_census_by_year([2017], tornadoes)
-
-    fig, ax = plt.subplots(1, figsize=(20, 10))
-
-    states = import_state_geometries()
-    states.plot(ax=ax, color="#EEEEEE", edgecolor='black')
-
-    geo_tornadoes = gpd.GeoDataFrame(data=tornadoes, geometry='start_point')
-    geo_tornadoes.plot(ax=ax, column='mag', legend=True, markersize=tornadoes['mag'], vmin=0, vmax=5)
-    plt.savefig('figures/testing.png')
-
 
 def main():
     # Folium: https://www.analyticsvidhya.com/blog/2020/06/guide-geospatial-analysis-folium-python/
     # https://pygis.io/docs/d_access_census.html
-    data = get_processed_data()
+    pass
 
 if __name__ == '__main__':
     main()
