@@ -3,11 +3,10 @@ import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
 import matplotlib.pyplot as plt
-from geopy.geocoders import Nominatim
 
 
-TORNADO_FILE = '/Users/jacobmckenney/Desktop/cs/cse163/project/tornado-analysis/data/1950-2020_all_tornadoes.csv'
-STATE_FILE = 'tornado-analysis/data/gz_2010_us_040_00_5m.json'
+TORNADO_FILE = 'data/1950-2020_all_tornadoes.csv'
+STATE_FILE = 'data/gz_2010_us_040_00_5m.json'
 API_KEY = 'd3687e22fcd51ce480482a5caa07e0ae239c77a5'
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 
@@ -55,7 +54,7 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame) -> pd.DataFrame:
         print(year)
     return result
 
-def import_tornado_data(hawaii=False, alaska=False, add_geometries=True):
+def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True):
     data = pd.read_csv(TORNADO_FILE)
     data['stf'] = data['stf'].apply(lambda x: int(x))
     data['f1'] = data['f1'].apply(lambda x: int(x))
@@ -65,6 +64,8 @@ def import_tornado_data(hawaii=False, alaska=False, add_geometries=True):
         data = data[data['stf'] != 15]
     if not alaska:
         data = data[data['stf'] != 2]
+    if not puerto_rico:
+        data = data[data['stf'] != 72]
     if add_geometries:
         add_start_end_points(data)
     return data
@@ -72,7 +73,7 @@ def import_tornado_data(hawaii=False, alaska=False, add_geometries=True):
 
 def import_state_geometries() -> gpd.GeoDataFrame:
     states = gpd.read_file(STATE_FILE)
-    states = states[(states['NAME'] != 'Alaska') & (states['NAME'] != 'Hawaii')]
+    states = states[(states['NAME'] != 'Alaska') & (states['NAME'] != 'Hawaii') & (states['NAME'] != 'Puerto Rico')]
     return states
 
 def add_start_end_points(df):
@@ -90,8 +91,8 @@ def get_processed_data():
     states.plot(ax=ax, color="#EEEEEE", edgecolor='black')
 
     geo_tornadoes = gpd.GeoDataFrame(data=tornadoes, geometry='start_point')
-    geo_tornadoes.plot(ax=ax, markersize=10)
-    plt.savefig('tornado-analysis/figures/testing.png')
+    geo_tornadoes.plot(ax=ax, column='mag', legend=True, markersize=tornadoes['mag'], vmin=0, vmax=5)
+    plt.savefig('figures/testing.png')
 
 
 def main():
