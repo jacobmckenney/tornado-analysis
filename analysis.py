@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 import seaborn as sns
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 
@@ -64,18 +64,20 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
 
 def devastation_predictions(df):
     tornadoes = pd.DataFrame(df)
-    tornadoes[DEVASTATION_FEATURES] = tornadoes[DEVASTATION_FEATURES].astype(int)
+    tornadoes.index = range(len(tornadoes.index))
+    tornadoes[DEVASTATION_FEATURES] = tornadoes[DEVASTATION_FEATURES].astype(float)
     features = tornadoes[DEVASTATION_FEATURES]
-    tornadoes[['inj', 'fat']] = tornadoes[['inj', 'fat']].astype(int)
+    tornadoes[['inj', 'fat']] = tornadoes[['inj', 'fat']].astype(float)
     labels = tornadoes[['inj','fat']]
     features_train, features_test, labels_train, labels_test = \
         train_test_split(features, labels, test_size=0.2)
-    model = DecisionTreeClassifier()
+    model = DecisionTreeRegressor()
     model.fit(features, labels)
-    train_predictions = model.predict(features_train, labels_train)
-    test_predictions = model.predict(features_test, labels_test)
-    print('Train Accuracy:', accuracy_score(labels_train, train_predictions))
-    print('Test Accuracy:', accuracy_score(labels_test, test_predictions))
+    print(features_train)
+    train_predictions = model.predict(features_train)
+    test_predictions = model.predict(features_test)
+    print('Train Accuracy:', mean_squared_error(labels_train, train_predictions))
+    print('Test Accuracy:', mean_squared_error(labels_test, test_predictions))
 
 
 
