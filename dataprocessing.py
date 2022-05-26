@@ -77,7 +77,6 @@ def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geome
 def import_state_geometries() -> gpd.GeoDataFrame:
     states = gpd.read_file(STATE_FILE)
     states = states[(states['NAME'] != 'Alaska') & (states['NAME'] != 'Hawaii') & (states['NAME'] != 'Puerto Rico')]
-    print(states)
     return states
 
 def add_start_end_points(df):

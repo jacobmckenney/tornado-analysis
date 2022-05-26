@@ -4,9 +4,12 @@ import pandas as pd
 import geopandas as gpd
 import seaborn as sns
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
 
 
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
+DEVASTATION_FEATURES = ['mo', 'dy', 'mag', 'stf', 'loss', 'closs', 'slat', 'slon', 'len', 'wid']
 
 
 def plot_magnitudes(tornadoes, states):
@@ -59,21 +62,32 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
     plt.xlabel(timeperiod)
     plt.savefig(f'figures/{figname}.png', bbox_inches='tight')
 
-def devestation_predictions(df):
+def devastation_predictions(df):
     tornadoes = pd.DataFrame(df)
-    labels = tornadoes[[]]
-    pass
+    tornadoes[DEVASTATION_FEATURES] = tornadoes[DEVASTATION_FEATURES].astype(int)
+    features = tornadoes[DEVASTATION_FEATURES]
+    tornadoes[['inj', 'fat']] = tornadoes[['inj', 'fat']].astype(int)
+    labels = tornadoes[['inj','fat']]
+    features_train, features_test, labels_train, labels_test = \
+        train_test_split(features, labels, test_size=0.2)
+    model = DecisionTreeClassifier()
+    model.fit(features, labels)
+    train_predictions = model.predict(features_train, labels_train)
+    test_predictions = model.predict(features_test, labels_test)
+    print('Train Accuracy:', accuracy_score(labels_train, train_predictions))
+    print('Test Accuracy:', accuracy_score(labels_test, test_predictions))
 
 
 
 def main(run_all):
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
-    most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
-    most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
-    most_likely_time_period(tornadoes.index.dayofyear, 'day', 'daily', tornadoes)
-    plot_tornadoes_by_state(tornadoes, states)
+    devastation_predictions(tornadoes)
     if run_all:
+        most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
+        most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
+        most_likely_time_period(tornadoes.index.dayofyear, 'day', 'daily', tornadoes)
+        plot_tornadoes_by_state(tornadoes, states)
         print(most_in_year(tornadoes))
         plot_magnitudes(tornadoes, states)
 
