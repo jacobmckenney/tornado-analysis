@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 import seaborn as sns
+from sklearn.tree import DecisionTreeClassifier
+
 
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 
@@ -53,23 +55,30 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
     tornadoes['count'] = tornadoes['yr']
     tornadoes = tornadoes[['count']]
     monthly_tornadoes = tornadoes.groupby(index).count()
-    monthly_tornadoes.plot()
-    sns.relplot(data=monthly_tornadoes, x='date', y='count', kind='line')
+
+    print(index)
+    sns.relplot(data=monthly_tornadoes, x='date_time', y='count', kind='line')
     plt.xlabel(timeperiod)
     plt.savefig(f'figures/{figname}.png', bbox_inches='tight')
+
+def devestation_predictions(df):
+    tornadoes = pd.DataFrame(df)
+    labels = tornadoes[[]]
+    pass
 
 
 
 def main(run_all):
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
+    print(tornadoes.set_index(tornadoes['date_time'], inplace=True))
     most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
     most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
-    most_likely_time_period(tornadoes.index.day, 'day', 'daily', tornadoes) # DOES DAY OF MONTH INSTEAD OF YEAR
+    most_likely_time_period(tornadoes.index.day, 'day', 'daily', tornadoes) # DOES DAY OF MONTH INSTEAD OF DAY OF YEAR
     plot_tornadoes_by_state(tornadoes, states)
     if run_all:
         print(most_in_year(tornadoes))
         plot_magnitudes(tornadoes, states)
 
 if __name__ == '__main__':
-    main(False)
+    main(True)

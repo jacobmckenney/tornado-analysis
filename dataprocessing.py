@@ -52,11 +52,16 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame) -> pd.DataFrame:
             result = pd.concat([result, joined], axis=0)
     return result
 
-def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True, years=None):
-    data = pd.read_csv(TORNADO_FILE, index_col='date', parse_dates=True)
+def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True, drop_dupes=True):
+    data = pd.read_csv(TORNADO_FILE, parse_dates=[['date', 'time']])
     data['stf'] = data['stf'].apply(lambda x: int(x))
     data['f1'] = data['f1'].apply(lambda x: int(x))
     data['yr'] = data['yr'].apply(lambda x: int(x))
+
+    data.set_index(data['date_time'], inplace=True)
+    if drop_dupes:
+        data.drop_duplicates(subset=['date_time', 'st'], inplace=True)
+    print(data)
     data = data[data['slon'] < 0]
     if not hawaii:
         data = data[data['stf'] != 15]
