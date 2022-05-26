@@ -35,7 +35,6 @@ def plot_tornadoes_by_state(tornadoes: gpd.GeoDataFrame, states: pd.DataFrame):
     states['STATE'] = states['STATE'].apply(lambda x: int(x))
     # Merge counts of tornadoes per state into state data to be plotted
     merged = states.merge(right=tornado_state_counts, how='left', left_on='STATE', right_on='stf')
-    #CHECK IF CENSUSAREA = STATE AREA
     merged['normalized_count'] = merged['count'] / merged['CENSUSAREA']
     merged.plot(ax=ax1, column='count', legend=True)
     merged.plot(ax=ax2, column='normalized_count', legend=True)
@@ -54,10 +53,9 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
     tornadoes = pd.DataFrame(df)
     tornadoes['count'] = tornadoes['yr']
     tornadoes = tornadoes[['count']]
-    monthly_tornadoes = tornadoes.groupby(index).count()
-
-    print(index)
-    sns.relplot(data=monthly_tornadoes, x='date_time', y='count', kind='line')
+    # Use groupby because we want to plot year-agnostic data
+    time_tornadoes = tornadoes.groupby(index).count()
+    sns.relplot(data=time_tornadoes, x='date_time', y='count', kind='line')
     plt.xlabel(timeperiod)
     plt.savefig(f'figures/{figname}.png', bbox_inches='tight')
 
@@ -71,14 +69,13 @@ def devestation_predictions(df):
 def main(run_all):
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
-    print(tornadoes.set_index(tornadoes['date_time'], inplace=True))
     most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
     most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
-    most_likely_time_period(tornadoes.index.day, 'day', 'daily', tornadoes) # DOES DAY OF MONTH INSTEAD OF DAY OF YEAR
+    most_likely_time_period(tornadoes.index.dayofyear, 'day', 'daily', tornadoes)
     plot_tornadoes_by_state(tornadoes, states)
     if run_all:
         print(most_in_year(tornadoes))
         plot_magnitudes(tornadoes, states)
 
 if __name__ == '__main__':
-    main(True)
+    main(False)
