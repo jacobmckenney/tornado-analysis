@@ -3,9 +3,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 
 
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
@@ -21,7 +23,7 @@ def plot_magnitudes(tornadoes, states):
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
 
-    states.plot(ax=ax, color="#EEEEEE", edgecolor='black')
+    states.plot(ax=ax, color='#EEEEEE', edgecolor='black')
 
     geo_tornadoes = gpd.GeoDataFrame(data=tornado_census, geometry='start_point')
     geo_tornadoes.plot(ax=ax, column='mag', legend=True, markersize=tornado_census['mag'], vmin=0, vmax=5)
@@ -31,7 +33,7 @@ def plot_magnitudes(tornadoes, states):
 def plot_tornadoes_by_state(tornadoes: gpd.GeoDataFrame, states: pd.DataFrame):
     fig, [ax1, ax2] = plt.subplots(2, figsize=(10, 10))
     ax1.set_title('Tornados per State in the U.S. (1950-2020)')
-    ax2.set_title('Tornados per Sq Mile by State in the U.S. (1950-2020)') # CHECK
+    ax2.set_title('Tornados per Sq Mile by State in the U.S. (1950-2020)')
     tornadoes['count'] = tornadoes['yr']
     tornadoes = tornadoes[['stf', 'count']]
     tornado_state_counts = tornadoes.groupby(by='stf').count()
@@ -62,29 +64,66 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
     plt.xlabel(timeperiod)
     plt.savefig(f'figures/{figname}.png', bbox_inches='tight')
 
-def devastation_predictions(df):
+def devastation_predictions(df, quick_tune=False):
     tornadoes = pd.DataFrame(df)
     tornadoes.index = range(len(tornadoes.index))
     tornadoes[DEVASTATION_FEATURES] = tornadoes[DEVASTATION_FEATURES].astype(float)
     features = tornadoes[DEVASTATION_FEATURES]
     tornadoes[['inj', 'fat']] = tornadoes[['inj', 'fat']].astype(float)
-    labels = tornadoes[['inj','fat']]
+    labels = tornadoes[['inj']]
     features_train, features_test, labels_train, labels_test = \
         train_test_split(features, labels, test_size=0.2)
-    model = DecisionTreeRegressor()
-    model.fit(features, labels)
-    print(features_train)
+    tree_tuning_params = {
+        'splitter':['best'],
+        'max_depth' : [1, 3],
+        'min_samples_leaf':[9, 10],
+        'min_weight_fraction_leaf':[0.1, 0.2],
+        'max_features':['auto'],
+        'max_leaf_nodes':[10, 20]
+    } if quick_tune else {
+        'splitter':['best','random'],
+        'max_depth' : [1, 3, 5, 7, 9, 11, 12],
+        'min_samples_leaf':[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        'min_weight_fraction_leaf':[0.1, 0.2, 0.3, 0.4, 0.5],
+        'max_features':['auto','log2','sqrt'],
+        'max_leaf_nodes':[10, 20, 30, 40, 50, 60, 70, 80, 90]
+    }
+
+    kneighbors_tuning_params = {'n_neighbors': [2,3,4], 'weights': ['uniform', 'distance'], 'p': [1, 2]} if quick_tune else {'n_neighbors': [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 'weights': ['uniform','distance'],'p':[1,2,5]}
+    results = []
+    decision_not_tuned = fit_and_test_model(DecisionTreeRegressor(), features_train, features_test, labels_train)
+    results.append((decision_not_tuned, False, 'DecisionTree'))
+
+    gsv = GridSearchCV(estimator=DecisionTreeRegressor(), param_grid=tree_tuning_params, scoring='neg_mean_squared_error', cv=3, verbose=2)
+    gsv.fit(features_train, labels_train)
+    decision_tuned = fit_and_test_model(DecisionTreeRegressor(**gsv.best_params_), features_train, features_test, labels_train)
+    results.append((decision_tuned, True, 'DecisionTree'))
+
+    kneighbors_not_tuned = fit_and_test_model(KNeighborsRegressor(), features_train, features_test, labels_train)
+    results.append((kneighbors_not_tuned, False, 'KNeighbors'))
+
+    kn_gsv = GridSearchCV(estimator=KNeighborsRegressor(), param_grid=kneighbors_tuning_params, scoring='neg_mean_squared_error', cv=3, verbose=2)
+    kn_gsv.fit(features_train, labels_train)
+    kneighbors_tuned = fit_and_test_model(KNeighborsRegressor(**kn_gsv.best_params_), features_train, features_test, labels_train)
+    results.append((kneighbors_tuned, True, 'KNeighbors'))
+
+    lr_not_tuned = fit_and_test_model(LinearRegression(), features_train, features_test, labels_train)
+    results.append((lr_not_tuned, False, 'LinearRegression'))
+
+    for result in results:
+        print(f'{result[2]} Train Accuracy', ('Tuned:' if result[1] else 'Not-Tuned:'), mean_squared_error(result[0][0], labels_train))
+        print(f'{result[2]} Test Accuracy', ('Tuned:' if result[1] else 'Not-Tuned:'), mean_squared_error(result[0][1], labels_test), '\n')
+
+def fit_and_test_model(model, features_train, features_test, labels_train):
+    model.fit(features_train, labels_train)
     train_predictions = model.predict(features_train)
     test_predictions = model.predict(features_test)
-    print('Train Accuracy:', mean_squared_error(labels_train, train_predictions))
-    print('Test Accuracy:', mean_squared_error(labels_test, test_predictions))
-
-
+    return (train_predictions, test_predictions)
 
 def main(run_all):
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
-    devastation_predictions(tornadoes)
+    devastation_predictions(tornadoes, quick_tune=True)
     if run_all:
         most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
         most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
