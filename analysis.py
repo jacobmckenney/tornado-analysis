@@ -1,5 +1,15 @@
 """
 Jacob McKenney & Luke Sala
+
+Performs analysis on dataframes that can be retrieved from the methods
+located in dataprocessing.py. Analysis incldes: normalized tornado count
+by state, finding most tornadoes in a year, training and tuning machine
+learning models to predict devastation factors, plotting tornadoes by
+magnitude and understanding demographics of high tornado-density areas.
+
+NOTE: When a parameter is described as a dataframe containing tornado
+information (or tornado dataframe) this dataframe should have been obtained via
+dataprocessing.import_tornado_data() to ensure proper functionality
 """
 import dataprocessing as dp
 import matplotlib.pyplot as plt
@@ -50,7 +60,10 @@ def plot_tornadoes_by_state(tornadoes, states):
 
 def most_in_year(tornadoes):
     """
-    Takes in a tornadoes dataframe
+    Takes in a tornadoes dataframe and finds the year with the most
+    tornado occurences across the United States and the number of
+    tornadoes occuring that year. Returns this information as a tuple:
+    (number, number) -> (year, year_count)
     """
     filtered = tornadoes[['yr', 'mo', 'dy']]
     grouped = filtered.groupby(by='yr')['yr'].count()
@@ -60,6 +73,12 @@ def most_in_year(tornadoes):
 
 
 def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
+    """
+    Given an datetime index of the passed dataframe(df) which should be a
+    tornado dataframe and information about that index (timeperiod - str and
+    figname -str) plots the information about tornadoes within that datetime
+    index (i.e weekly, monthly, etc.).
+    """
     tornadoes = pd.DataFrame(df)
     tornadoes['count'] = tornadoes['yr']
     tornadoes = tornadoes[['count']]
@@ -71,6 +90,15 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
 
 
 def devastation_predictions(df, quick_tune=False):
+    """
+    Takes in a tornado dataframe, df, and a boolean, quick_tune, and attempts
+    to predict various devastation metrics about a tornado based on the
+    tornado dataset. Uses and trains multiple kinds of machine learning models
+    to see which one can best predict these metrics. Writes model accuracy
+    information to the file 'data/analysis-results.txt' using mean squared
+    error as the accuracy metric. Models used: DecisionTreeRegressor,
+    KNeighborsRegressor, and LinearRegression
+    """
     tornadoes = pd.DataFrame(df)
     tornadoes.index = range(len(tornadoes.index))
     tornadoes[DEVASTATION_FEATURES] = \
@@ -133,13 +161,23 @@ def devastation_predictions(df, quick_tune=False):
 
 
 def fit_and_test_model(model, features_train, features_test, labels_train):
+    """
+    Takes in a model instance (already instantiated with hyperparameters) and
+    trains the model on the provided training set and then returns the
+    predictions for the training set and the test set.
+    """
     model.fit(features_train, labels_train)
     train_predictions = model.predict(features_train)
     test_predictions = model.predict(features_test)
     return (train_predictions, test_predictions)
 
 
-def plot_magnitudes(df: gpd.GeoDataFrame, states, years=ALL_VALID_YEARS):
+def plot_magnitudes(df, states, years=ALL_VALID_YEARS):
+    """
+    Takes in dataframes containing tornado information and state geometries
+    and plots a graph of the magnitudes of tornadoes over the years specified
+    by the years list (default 2009-2020).
+    """
     tornadoes = gpd.GeoDataFrame(df)
     tornadoes = tornadoes.query('yr in @years')
     fig, ax = plt.subplots(1, figsize=(20, 10))
@@ -155,7 +193,13 @@ def plot_magnitudes(df: gpd.GeoDataFrame, states, years=ALL_VALID_YEARS):
     plt.savefig('figures/magnitudes_2009-2019.png')
 
 
-def poverty_and_tornadoes(census: pd.DataFrame, states: gpd.GeoDataFrame):
+def poverty_and_tornadoes(census):
+    """
+    Takes in a tornado information dataframe combined with census data to
+    try to find trends in demographic information in tornado-heavy counties.
+    The goal is to learn more about the areas that tornadoes most affect.
+    Results are written to the 'data/analysis-results.txt' file.
+    """
     unique_counties = census.drop_duplicates(subset=['NAME'])
     county_counts = census.groupby('NAME').count()
     top_10_percent = county_counts.nlargest((round(len(county_counts) * 0.1)),
@@ -184,7 +228,11 @@ def poverty_and_tornadoes(census: pd.DataFrame, states: gpd.GeoDataFrame):
 
 
 def main(args):
-
+    """
+    Uses methods from analysis.py and dataprocessing.py to
+    perform a complete analysis on tornadoes and extract pertinent
+    information/graphs.
+    """
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
     census = dp.tornado_census_by_year(ALL_VALID_YEARS, tornadoes)

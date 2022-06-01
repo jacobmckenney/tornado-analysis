@@ -1,5 +1,12 @@
 """
 Jacob McKenney & Luke Sala
+
+Imports, cleans, and joins data from multiple datasets to be used
+for analysis of tornadoes withiin the United States from 1950 - 2020.
+Datasets include:
+    - Tornado info: 'data/1950-2020_all_tornadoes.csv'
+    - State info & geometries: 'data/gz_2010_us_040_00_5m.json'
+    - Census information by county: Acquired via API calls
 """
 from census import Census
 import pandas as pd
@@ -14,20 +21,20 @@ API_KEY = 'd3687e22fcd51ce480482a5caa07e0ae239c77a5'
 
 def retrieve_census_data(c: Census, year) -> pd.DataFrame:
     """
-        FUNCTION COMMENT HERE
+    Takes in an instantiated census object from the Census library along with
+    a year and retrieves the pertinent data from the U.S. government via
+    API. The following data is returned in a dataframe:
+    - NAME: County name
+    - B19013_001E: Median household income in the past 12 months
+      (2020 inflation-adjusted dollars)
+    - C17002_001E: count of ratio of income to poverty in the
+      past 12 months (total)
+    - C17002_002E: count of ratio of income to poverty in the past
+      12 months (< 0.50)
+    - C17002_003E: count of ratio of income to poverty in the past
+      12 months (0.50 - 0.99)
+    - B01003_001E: Total population
     """
-    # Get a census object using the census library, api key provided for access
-    # Extract Census data for specific categories on a per tract basis
-    # - B19013_001E: Median household income in the past 12 months
-    #   (2020 inflation-adjusted dollars)
-    # - C17002_001E: count of ratio of income to poverty in the
-    #   past 12 months (total)
-    # - C17002_002E: count of ratio of income to poverty in the past
-    #   12 months (< 0.50)
-    # - C17002_003E: count of ratio of income to poverty in the past
-    #   12 months (0.50 - 0.99)
-    # - B01003_001E: total population
-    # TRY TO QUERY FOR THE CORRECT CENSUS YEAR DATA year range (2009, 2019)
     wa_census = c.acs5.state_county(
         fields=('NAME', 'B19013_001E', 'C17002_001E', 'C17002_002E',
                 'C17002_003E', 'B01003_001E'),
@@ -39,6 +46,11 @@ def retrieve_census_data(c: Census, year) -> pd.DataFrame:
 
 
 def tornado_census_by_year(years, tornadoes: pd.DataFrame):
+    """
+    Combines census data from retrieve_census_data for each year in years
+    with the passed tornado information dataframe. Returns the resulting
+    dataframe.
+    """
     c = Census(API_KEY)
     result = None
     for year in years:
@@ -67,6 +79,13 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame):
 
 def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False,
                         add_geometries=True, drop_dupes=True):
+    """
+    Reads the tornado csv dataset located at 'data/1950-2020_all_tornadoes.csv'
+    into a dataframe, converts index to a datetime objet, drops duplicates,
+    filters data by location, and creates start and end point geometries
+    for geospatial data analysis of the tornadoes. Returns the resulting
+    dataframe.
+    """
     data = pd.read_csv(TORNADO_FILE, parse_dates=[['date', 'time']])
     data['stf'] = data['stf'].apply(lambda x: int(x))
     data['f1'] = data['f1'].apply(lambda x: int(x))
@@ -75,7 +94,6 @@ def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False,
     data.set_index(data['date_time'], inplace=True)
     if drop_dupes:
         data.drop_duplicates(subset=['date_time', 'st'], inplace=True)
-    print(data)
     data = data[data['slon'] < 0]
     if not hawaii:
         data = data[data['stf'] != 15]
@@ -89,6 +107,11 @@ def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False,
 
 
 def import_state_geometries() -> gpd.GeoDataFrame:
+    """
+    Reads in the state json dataset located at 'data/gz_2010_us_040_00_5m.json'
+    into a dataframe and filters out states that are far away from the lower 48
+    U.S. states for easier geospatial analysis. Returns the resulting dataframe
+    """
     states = gpd.read_file(STATE_FILE)
     states = states[(states['NAME'] != 'Alaska') &
                     (states['NAME'] != 'Hawaii') &
@@ -97,8 +120,10 @@ def import_state_geometries() -> gpd.GeoDataFrame:
 
 
 def add_start_end_points(df):
-    # Add start point and end point geometries to joined pandas df using
-    # longitude and latitude
+    """
+    Takes in a tornado information dataframe and adds start point and
+    endpoint geometries. Modifies the dataframe in place.
+    """
     df['start_point'] = [Point(lon, lat) for (lon, lat) in zip(df['slon'],
                                                                df['slat'])]
     df['end_point'] = [Point(lon, lat) for (lon, lat) in zip(df['elon'],
