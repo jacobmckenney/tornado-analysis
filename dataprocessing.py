@@ -16,13 +16,14 @@ def retrieve_census_data(c: Census, year) -> pd.DataFrame:
     """
     # Get a census object using the census library, api key provided for access
     # Extract Census data for specific categories on a per tract basis
+        # B19013_001E: Median household income in the past 12 months (2020 inflation-adjusted dollars)
         # C17002_001E: count of ratio of income to poverty in the past 12 months (total)
         # C17002_002E: count of ratio of income to poverty in the past 12 months (< 0.50)
         # C17002_003E: count of ratio of income to poverty in the past 12 months (0.50 - 0.99)
         # B01003_001E: total population
     #TRY TO QUERY FOR THE CORRECT CENSUS YEAR DATA year range (2009, 2019)
     wa_census = c.acs5.state_county(
-        fields=('NAME', 'C17002_001E', 'C17002_002E', 'C17002_003E',
+        fields=('NAME', 'B19013_001E', 'C17002_001E', 'C17002_002E', 'C17002_003E',
                 'B01003_001E'),
         state_fips='*',
         county_fips='*',
@@ -30,7 +31,7 @@ def retrieve_census_data(c: Census, year) -> pd.DataFrame:
     # Turn our received wa_census data into a pandas dataframe
     return pd.DataFrame(wa_census)
 
-def tornado_census_by_year(years, tornadoes: pd.DataFrame) -> pd.DataFrame:
+def tornado_census_by_year(years, tornadoes: pd.DataFrame):
     c = Census(API_KEY)
     result = None
     for year in years:
@@ -50,6 +51,7 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame) -> pd.DataFrame:
             result = joined
         else:
             result = pd.concat([result, joined], axis=0)
+        result.to_csv('data/joined.csv')
     return result
 
 def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True, drop_dupes=True):
