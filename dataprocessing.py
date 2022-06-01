@@ -1,8 +1,10 @@
+"""
+Jacob McKenney & Luke Sala
+"""
 from census import Census
 import pandas as pd
 import geopandas as gpd
 from shapely.geometry import Point
-
 
 
 TORNADO_FILE = 'data/1950-2020_all_tornadoes.csv'
@@ -16,20 +18,25 @@ def retrieve_census_data(c: Census, year) -> pd.DataFrame:
     """
     # Get a census object using the census library, api key provided for access
     # Extract Census data for specific categories on a per tract basis
-        # B19013_001E: Median household income in the past 12 months (2020 inflation-adjusted dollars)
-        # C17002_001E: count of ratio of income to poverty in the past 12 months (total)
-        # C17002_002E: count of ratio of income to poverty in the past 12 months (< 0.50)
-        # C17002_003E: count of ratio of income to poverty in the past 12 months (0.50 - 0.99)
-        # B01003_001E: total population
-    #TRY TO QUERY FOR THE CORRECT CENSUS YEAR DATA year range (2009, 2019)
+    # - B19013_001E: Median household income in the past 12 months
+    #   (2020 inflation-adjusted dollars)
+    # - C17002_001E: count of ratio of income to poverty in the
+    #   past 12 months (total)
+    # - C17002_002E: count of ratio of income to poverty in the past
+    #   12 months (< 0.50)
+    # - C17002_003E: count of ratio of income to poverty in the past
+    #   12 months (0.50 - 0.99)
+    # - B01003_001E: total population
+    # TRY TO QUERY FOR THE CORRECT CENSUS YEAR DATA year range (2009, 2019)
     wa_census = c.acs5.state_county(
-        fields=('NAME', 'B19013_001E', 'C17002_001E', 'C17002_002E', 'C17002_003E',
-                'B01003_001E'),
+        fields=('NAME', 'B19013_001E', 'C17002_001E', 'C17002_002E',
+                'C17002_003E', 'B01003_001E'),
         state_fips='*',
         county_fips='*',
         year=year)
     # Turn our received wa_census data into a pandas dataframe
     return pd.DataFrame(wa_census)
+
 
 def tornado_census_by_year(years, tornadoes: pd.DataFrame):
     c = Census(API_KEY)
@@ -40,12 +47,15 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame):
         # Get the cnesus data
         year_data = retrieve_census_data(c, year)
         # Drop Hawaii and Alaska data prior to joining
-        year_data = year_data[(year_data['state'] != '02') & (year_data['state'] != '15')]
+        year_data = year_data[(year_data['state'] != '02') &
+                              (year_data['state'] != '15')]
         # Convert joined columns to the same dtype
         year_data['state'] = year_data['state'].apply(lambda x: int(x))
         year_data['county'] = year_data['county'].apply(lambda x: int(x))
         # Left join on both state and county to get a row for each tornado dp
-        joined = t_filtered.merge(right=year_data, how='left', left_on=['stf', 'f1'], right_on=['state', 'county'])
+        joined = t_filtered.merge(right=year_data, how='left',
+                                  left_on=['stf', 'f1'],
+                                  right_on=['state', 'county'])
         # Concatenate all data retrieved
         if result is None:
             result = joined
@@ -54,7 +64,9 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame):
         result.to_csv('data/joined.csv')
     return result
 
-def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geometries=True, drop_dupes=True):
+
+def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False,
+                        add_geometries=True, drop_dupes=True):
     data = pd.read_csv(TORNADO_FILE, parse_dates=[['date', 'time']])
     data['stf'] = data['stf'].apply(lambda x: int(x))
     data['f1'] = data['f1'].apply(lambda x: int(x))
@@ -78,19 +90,24 @@ def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False, add_geome
 
 def import_state_geometries() -> gpd.GeoDataFrame:
     states = gpd.read_file(STATE_FILE)
-    states = states[(states['NAME'] != 'Alaska') & (states['NAME'] != 'Hawaii') & (states['NAME'] != 'Puerto Rico')]
+    states = states[(states['NAME'] != 'Alaska') &
+                    (states['NAME'] != 'Hawaii') &
+                    (states['NAME'] != 'Puerto Rico')]
     return states
 
+
 def add_start_end_points(df):
-    # Add start point and end point geometries to joined pandas df using longitude and latitude
-    df['start_point'] = [Point(lon, lat) for (lon, lat) in zip(df['slon'], df['slat'])]
-    df['end_point'] = [Point(lon, lat) for (lon, lat) in zip(df['elon'], df['elat'])]
+    # Add start point and end point geometries to joined pandas df using
+    # longitude and latitude
+    df['start_point'] = [Point(lon, lat) for (lon, lat) in zip(df['slon'],
+                                                               df['slat'])]
+    df['end_point'] = [Point(lon, lat) for (lon, lat) in zip(df['elon'],
+                                                             df['elat'])]
 
 
 def main():
-    # Folium: https://www.analyticsvidhya.com/blog/2020/06/guide-geospatial-analysis-folium-python/
-    # https://pygis.io/docs/d_access_census.html
     pass
+
 
 if __name__ == '__main__':
     main()
