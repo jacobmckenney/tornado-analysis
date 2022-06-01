@@ -5,6 +5,15 @@
 - Luke Sala (1838050)
 
 ## Description
+### Files & Folders
+- `dataprocessing.py`: Imports, retrieves, cleans, filters, and joins datasets
+- `analysis.py`: Runs analysis on dataframes retrieved from `dataprocessing.py`
+- `tuning_args.py`: Stores static tuning parameters for different tuning
+variations
+- `data`: Folder containing all data that is imported or written during
+analysis. Also includes a pdf explaining the tornado dataset used
+- `figures`: Folder containing figures that are producedf by running
+`analysis.py`
 
 ## Running Our Script
 ### Required Packages
