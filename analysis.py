@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import geopandas as gpd
 import seaborn as sns
+import sys
 from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
@@ -15,8 +16,8 @@ DEVASTATION_FEATURES = ['mo', 'dy', 'mag', 'stf', 'loss', 'closs', 'slat', 'slon
 
 def plot_tornadoes_by_state(tornadoes: gpd.GeoDataFrame, states: pd.DataFrame):
     fig, [ax1, ax2] = plt.subplots(2, figsize=(10, 10))
-    ax1.set_title('Tornados per State in the U.S. (1950-2020)')
-    ax2.set_title('Tornados per Sq Mile by State in the U.S. (1950-2020)')
+    ax1.set_title('Tornadoes by State in the U.S. (1950-2020)')
+    ax2.set_title('Tornadoes per Sq Mile by State in the U.S. (1950-2020)')
     tornadoes['count'] = tornadoes['yr']
     tornadoes = tornadoes[['stf', 'count']]
     tornado_state_counts = tornadoes.groupby(by='stf').count()
@@ -103,8 +104,8 @@ def fit_and_test_model(model, features_train, features_test, labels_train):
     test_predictions = model.predict(features_test)
     return (train_predictions, test_predictions)
 
-def plot_magnitudes(tornadoes: gpd.GeoDataFrame, states, years=ALL_VALID_YEARS):
-
+def plot_magnitudes(df: gpd.GeoDataFrame, states, years=ALL_VALID_YEARS):
+    tornadoes = gpd.GeoDataFrame(df)
     tornadoes = tornadoes.query('yr in @years')
     fig, ax = plt.subplots(1, figsize=(20, 10))
     plt.title('Tornado Location and Magnitude in the U.S (2009-2019)')
@@ -134,15 +135,15 @@ def poverty_and_tornadoes(census: pd.DataFrame, states: gpd.GeoDataFrame):
     print('Average median income of bottom 90 percent:', bottom_90_merged['B19013_001E'].mean())
 
 
-def main(run_all):
+def main(args):
     tornadoes = dp.import_tornado_data()
     states = dp.import_state_geometries()
     census = dp.tornado_census_by_year(ALL_VALID_YEARS, tornadoes)
-    print(census)
     poverty_and_tornadoes(census, states)
     plot_magnitudes(tornadoes, states)
-    if run_all:
-        devastation_predictions(tornadoes, quick_tune=True)
+    if args[0]:
+        devastation_predictions(tornadoes, quick_tune=(args[1] if args[1] else True))
+        tornadoes = dp.import_tornado_data()
         most_likely_time_period(tornadoes.index.month, 'month', 'monthly', tornadoes)
         most_likely_time_period(tornadoes.index.week, 'week', 'weekly', tornadoes)
         most_likely_time_period(tornadoes.index.dayofyear, 'day', 'daily', tornadoes)
@@ -150,4 +151,4 @@ def main(run_all):
         print(most_in_year(tornadoes))
 
 if __name__ == '__main__':
-    main(False)
+    main(sys.argv[1:])
