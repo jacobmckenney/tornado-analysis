@@ -1,22 +1,22 @@
-Most tornadoes in a year (year, count): (2004, 1774) 
+Most tornadoes in a year (year, count): (2004, 1774)
 
 Average median income of top 10 percent: 43810.41732283465
-Average median income of bottom 90 percent: 45184.945756780406 
+Average median income of bottom 90 percent: 45184.945756780406
 
 DecisionTree - Train Accuracy, Not-Tuned: 9.752482006670697e-06
-DecisionTree - Test Accuracy, Not-Tuned: 206.57200811359027 
+DecisionTree - Test Accuracy, Not-Tuned: 206.57200811359027
 
 DecisionTree - Train Accuracy, Tuned: 304.28926042429055
-DecisionTree - Test Accuracy, Tuned: 341.4064015908387 
+DecisionTree - Test Accuracy, Tuned: 341.4064015908387
 
 KNeighbors - Train Accuracy, Not-Tuned: 134.71935477579044
-KNeighbors - Test Accuracy, Not-Tuned: 282.6726821657045 
+KNeighbors - Test Accuracy, Not-Tuned: 282.6726821657045
 
 KNeighbors - Train Accuracy, Tuned: 9.752482006670697e-06
-KNeighbors - Test Accuracy, Tuned: 285.6283512546887 
+KNeighbors - Test Accuracy, Tuned: 285.6283512546887
 
 LinearRegression - Train Accuracy, Not-Tuned: 123.1837196180135
-LinearRegression - Test Accuracy, Not-Tuned: 215.36285872397633 
+LinearRegression - Test Accuracy, Not-Tuned: 215.36285872397633
 
 
 

@@ -1,7 +1,13 @@
 """
 Jacob McKenney & Luke Sala
+
+Stores various dictionaries filled with parameters for different machine
+learning models. Intended to be used in sklearn GridSearchCV objects to
+tune models
 """
 
+
+# Decision Tree Regressor hyperparameters
 TREE_TUNING_QUICK = {
     'splitter': ['best'],
     'max_depth': [1, 3],
@@ -20,6 +26,8 @@ TREE_TUNING_FULL = {
     'max_leaf_nodes': [10, 20, 30, 40, 50, 60, 70, 80, 90]
 }
 
+
+# KNeighbors Regressor hyperparameters
 KNEIGHBORS_TUNING_QUICK = {
     'n_neighbors': [2, 3, 4],
     'weights': ['uniform', 'distance'],

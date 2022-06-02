@@ -12,7 +12,7 @@
 variations
 - `data`: Folder containing all data that is imported or written during
 analysis. Also includes a pdf explaining the tornado dataset used
-- `figures`: Folder containing figures that are producedf by running
+- `figures`: Folder containing figures that are produced by running
 `analysis.py`
 
 ## Running Our Script
