@@ -210,29 +210,29 @@ def poverty_and_tornadoes(census):
     """
     unique_counties = census.drop_duplicates(subset=['NAME'])
     county_counts = census.groupby('NAME').count()
-    top_10_percent = county_counts.nlargest((round(len(county_counts) * 0.1)),
-                                            'county')
-    top_10_percent['count'] = top_10_percent['yr']
-    top_10_percent.reset_index(inplace=True, drop=False)
-    top_10_percent = top_10_percent[['NAME', 'count']]
-    bottom_90_percent = \
-        county_counts.nsmallest((round(len(county_counts) * 0.9)), 'county')
-    bottom_90_percent['count'] = bottom_90_percent['yr']
-    bottom_90_percent.reset_index(inplace=True, drop=False)
-    bottom_90_percent = bottom_90_percent[['NAME', 'count']]
-    top_10_merged = top_10_percent.merge(right=unique_counties, left_on='NAME',
-                                         right_on='NAME', how='left')
-    bottom_90_merged = bottom_90_percent.merge(right=unique_counties,
-                                               left_on='NAME', right_on='NAME',
-                                               how='left')
-    o_sys = sys.stdout
-    with open(RESULT_FILE, 'a') as f:
-        sys.stdout = f
-        print('Average median income of top 10 percent:',
-              top_10_merged['B19013_001E'].mean())
-        print('Average median income of bottom 90 percent:',
-              bottom_90_merged['B19013_001E'].mean(), '\n')
-        sys.stdout = o_sys
+    for x in range(10, 51, 10):
+        top = county_counts.nlargest((round(len(county_counts) * (x / 100))),
+                                     'county')
+        top['count'] = top['county']
+        top.reset_index(inplace=True, drop=False)
+        top = top[['NAME', 'count']]
+        bottom = county_counts.nsmallest((round(len(county_counts) *
+                                         (1 - x / 100))), 'county')
+        bottom['count'] = bottom['yr']
+        bottom.reset_index(inplace=True, drop=False)
+        bottom = bottom[['NAME', 'count']]
+        top_merged = top.merge(right=unique_counties, left_on='NAME',
+                               right_on='NAME', how='left')
+        bottom_merged = bottom.merge(right=unique_counties, left_on='NAME',
+                                     right_on='NAME', how='left')
+        o_sys = sys.stdout
+        with open(RESULT_FILE, 'a') as f:
+            sys.stdout = f
+            print(f'Average median income of top {x} percent:',
+                  top_merged['B19013_001E'].mean())
+            print(f'Average median income of bottom {100 - x} percent:',
+                  bottom_merged['B19013_001E'].mean(), '\n')
+            sys.stdout = o_sys
 
 
 def main(args):

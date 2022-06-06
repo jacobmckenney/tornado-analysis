@@ -3,60 +3,49 @@ Most tornadoes in a year (year, count): (2004, 1774)
 Average median income of top 10 percent: 43810.41732283465
 Average median income of bottom 90 percent: 45184.945756780406 
 
+Average median income of top 20 percent: 43658.22244094488
+Average median income of bottom 80 percent: 45322.38139763779 
+
+Average median income of top 30 percent: 43957.465879265095
+Average median income of bottom 70 percent: 45521.05343082115 
+
+Average median income of top 40 percent: 43800.97834645669
+Average median income of bottom 60 percent: 45820.54461942257 
+
+Average median income of top 50 percent: 43965.54330708661
+Average median income of bottom 50 percent: 46067.28661417323 
+
+Average median income of top 60 percent: 44119.03608923884
+Average median income of bottom 40 percent: 46124.52755905512 
+
+Average median income of top 70 percent: 44473.60236220472
+Average median income of bottom 30 percent: 46311.872703412075 
+
+Average median income of top 80 percent: 44621.76525590551
+Average median income of bottom 20 percent: 46708.75787401575 
+
+Average median income of top 90 percent: 44822.279090113734
+Average median income of bottom 10 percent: 46459.73228346457 
+
+Average median income of top 100 percent: 45054.62795275591
+Average median income of bottom 0 percent: nan 
+
 Predicting: inj 
 
-DecisionTree - Train Accuracy, Not-Tuned: 9.752482006670698e-05
-DecisionTree - Test Accuracy, Not-Tuned: 118.40482134498362 
+DecisionTree - Train Accuracy, Not-Tuned: 9.752482006670697e-06
+DecisionTree - Test Accuracy, Not-Tuned: 571.7810110781713 
 
-DecisionTree - Train Accuracy, Tuned: 310.046633345258
-DecisionTree - Test Accuracy, Tuned: 318.5187505399634 
+DecisionTree - Train Accuracy, Tuned: 260.4417169000815
+DecisionTree - Test Accuracy, Tuned: 518.1900825516601 
 
-KNeighbors - Train Accuracy, Not-Tuned: 156.60298660008974
-KNeighbors - Test Accuracy, Not-Tuned: 181.78517397409894 
+KNeighbors - Train Accuracy, Not-Tuned: 119.41448126548207
+KNeighbors - Test Accuracy, Not-Tuned: 391.9612763301606 
 
-KNeighbors - Train Accuracy, Tuned: 9.752482006670698e-05
-KNeighbors - Test Accuracy, Tuned: 144.62462723524047 
+KNeighbors - Train Accuracy, Tuned: 9.752482006670697e-06
+KNeighbors - Test Accuracy, Tuned: 383.32944732021264 
 
-LinearRegression - Train Accuracy, Not-Tuned: 155.17892197690895
-LinearRegression - Test Accuracy, Not-Tuned: 89.93070875503487 
-
-
-
-Predicting: fat 
-
-DecisionTree - Train Accuracy, Not-Tuned: 0.0
-DecisionTree - Test Accuracy, Not-Tuned: 0.8754875955687315 
-
-DecisionTree - Train Accuracy, Tuned: 2.5090844033456086
-DecisionTree - Test Accuracy, Tuned: 0.6304804941498587 
-
-KNeighbors - Train Accuracy, Not-Tuned: 0.9235530242446701
-KNeighbors - Test Accuracy, Not-Tuned: 0.44488999843969423 
-
-KNeighbors - Train Accuracy, Tuned: 0.0
-KNeighbors - Test Accuracy, Tuned: 0.59182064827647 
-
-LinearRegression - Train Accuracy, Not-Tuned: 1.0381875346013083
-LinearRegression - Test Accuracy, Not-Tuned: 0.8944714597307365 
-
-
-
-Predicting: closs 
-
-DecisionTree - Train Accuracy, Not-Tuned: 0.0
-DecisionTree - Test Accuracy, Not-Tuned: 21368031283.350006 
-
-DecisionTree - Train Accuracy, Tuned: 5564026750.994848
-DecisionTree - Test Accuracy, Tuned: 412766364.0630618 
-
-KNeighbors - Train Accuracy, Not-Tuned: 4501361676.965413
-KNeighbors - Test Accuracy, Not-Tuned: 593406618.7492461 
-
-KNeighbors - Train Accuracy, Tuned: 0.0
-KNeighbors - Test Accuracy, Tuned: 428761510.488373 
-
-LinearRegression - Train Accuracy, Not-Tuned: 5500108372.133291
-LinearRegression - Test Accuracy, Not-Tuned: 452734290.07352626 
+LinearRegression - Train Accuracy, Not-Tuned: 115.36823580680407
+LinearRegression - Test Accuracy, Not-Tuned: 254.35343374806422 
 
 
 

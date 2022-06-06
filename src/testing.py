@@ -26,9 +26,17 @@ def main():
     a.plot_tornadoes_by_state(full_tornadoes, states, COUNT_PATH)
     # There are four rows for 1995 but again one is a duplicate
     assert_equals((1995, 3), a.most_in_year(full_tornadoes))
-
+    # Check to make sure these graphs make sense for the small dataset
     a.most_likely_time_period(full_tornadoes.index.year, 'year',
                               'test_figures/yearly.png', full_tornadoes)
+    a.most_likely_time_period(full_tornadoes.index.month, 'month',
+                              'test_figures/monthly.png', full_tornadoes)
+    a.most_likely_time_period(full_tornadoes.index.week, 'week',
+                              'test_figures/weekly.png', full_tornadoes)
+    # Dataset includes two tornadoes on same day different year which should
+    # cause a spike
+    a.most_likely_time_period(full_tornadoes.index.dayofyear, 'day',
+                              'test_figures/daily.png', full_tornadoes)
 
 
 if __name__ == '__main__':
