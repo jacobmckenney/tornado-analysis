@@ -14,8 +14,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 
 
-TORNADO_FILE = 'data/1950-2020_all_tornadoes.csv'
-STATE_FILE = 'data/gz_2010_us_040_00_5m.json'
+STATE_FILE = '../data/gz_2010_us_040_00_5m.json'
 API_KEY = 'd3687e22fcd51ce480482a5caa07e0ae239c77a5'
 
 
@@ -73,7 +72,7 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame):
             result = joined
         else:
             result = pd.concat([result, joined], axis=0)
-        result.to_csv('data/joined.csv')
+        result.to_csv('../data/joined.csv')
     return result
 
 

@@ -3,3 +3,60 @@ Most tornadoes in a year (year, count): (2004, 1774)
 Average median income of top 10 percent: 43810.41732283465
 Average median income of bottom 90 percent: 45184.945756780406 
 
+Predicting: inj 
+
+DecisionTree - Train Accuracy, Not-Tuned: 9.752482006670698e-05
+DecisionTree - Test Accuracy, Not-Tuned: 118.40482134498362 
+
+DecisionTree - Train Accuracy, Tuned: 310.046633345258
+DecisionTree - Test Accuracy, Tuned: 318.5187505399634 
+
+KNeighbors - Train Accuracy, Not-Tuned: 156.60298660008974
+KNeighbors - Test Accuracy, Not-Tuned: 181.78517397409894 
+
+KNeighbors - Train Accuracy, Tuned: 9.752482006670698e-05
+KNeighbors - Test Accuracy, Tuned: 144.62462723524047 
+
+LinearRegression - Train Accuracy, Not-Tuned: 155.17892197690895
+LinearRegression - Test Accuracy, Not-Tuned: 89.93070875503487 
+
+
+
+Predicting: fat 
+
+DecisionTree - Train Accuracy, Not-Tuned: 0.0
+DecisionTree - Test Accuracy, Not-Tuned: 0.8754875955687315 
+
+DecisionTree - Train Accuracy, Tuned: 2.5090844033456086
+DecisionTree - Test Accuracy, Tuned: 0.6304804941498587 
+
+KNeighbors - Train Accuracy, Not-Tuned: 0.9235530242446701
+KNeighbors - Test Accuracy, Not-Tuned: 0.44488999843969423 
+
+KNeighbors - Train Accuracy, Tuned: 0.0
+KNeighbors - Test Accuracy, Tuned: 0.59182064827647 
+
+LinearRegression - Train Accuracy, Not-Tuned: 1.0381875346013083
+LinearRegression - Test Accuracy, Not-Tuned: 0.8944714597307365 
+
+
+
+Predicting: closs 
+
+DecisionTree - Train Accuracy, Not-Tuned: 0.0
+DecisionTree - Test Accuracy, Not-Tuned: 21368031283.350006 
+
+DecisionTree - Train Accuracy, Tuned: 5564026750.994848
+DecisionTree - Test Accuracy, Tuned: 412766364.0630618 
+
+KNeighbors - Train Accuracy, Not-Tuned: 4501361676.965413
+KNeighbors - Test Accuracy, Not-Tuned: 593406618.7492461 
+
+KNeighbors - Train Accuracy, Tuned: 0.0
+KNeighbors - Test Accuracy, Tuned: 428761510.488373 
+
+LinearRegression - Train Accuracy, Not-Tuned: 5500108372.133291
+LinearRegression - Test Accuracy, Not-Tuned: 452734290.07352626 
+
+
+

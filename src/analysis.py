@@ -28,13 +28,14 @@ import tuning_args as ta
 
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 DEVASTATION_FEATURES = ['mo', 'dy', 'mag', 'stf', 'loss', 'closs', 'slat',
-                        'slon', 'len', 'wid', 'fat']
-TORNADO_FILE = 'data/1950-2020_all_tornadoes.csv'
-RESULT_FILE = 'data/analysis-results.txt'
-MAGNITUDES_PATH = 'figures/magnitudes_2009-2019.png'
+                        'slon', 'len', 'wid', 'fat', 'inj']
+TORNADO_FILE = '../data/1950-2020_all_tornadoes.csv'
+RESULT_FILE = '../data/analysis-results.txt'
+MAGNITUDES_PATH = '../figures/magnitudes_2009-2019.png'
+COUNT_PATH = '../figures/tornado_count_1950-2020.png'
 
 
-def plot_tornadoes_by_state(tornadoes, states):
+def plot_tornadoes_by_state(tornadoes, states, save_path):
     """
     Takes in a geodataframe containing information about tornadoes
     and a geodataframestates containing information about U.S. state
@@ -52,12 +53,14 @@ def plot_tornadoes_by_state(tornadoes, states):
     tornado_state_counts = tornadoes.groupby(by='stf').count()
     states['STATE'] = states['STATE'].apply(lambda x: int(x))
     # Merge counts of tornadoes per state into state data to be plotted
+    states.plot(ax=ax1, color='#EEEEEE', edgecolor='black')
+    states.plot(ax=ax2, color='#EEEEEE', edgecolor='black')
     merged = states.merge(right=tornado_state_counts, how='left',
                           left_on='STATE', right_on='stf')
     merged['normalized_count'] = merged['count'] / merged['CENSUSAREA']
     merged.plot(ax=ax1, column='count', legend=True)
     merged.plot(ax=ax2, column='normalized_count', legend=True)
-    plt.savefig('figures/tornado_count_1950-2020.png')
+    plt.savefig(save_path)
 
 
 def most_in_year(tornadoes):
@@ -74,7 +77,7 @@ def most_in_year(tornadoes):
     return (max_year, max_in_year)
 
 
-def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
+def most_likely_time_period(index, timeperiod, save_path, df: pd.DataFrame):
     """
     Given an datetime index of the passed dataframe(df) which should be a
     tornado dataframe and information about that index (timeperiod - str and
@@ -88,12 +91,13 @@ def most_likely_time_period(index, timeperiod, figname, df: pd.DataFrame):
     time_tornadoes = tornadoes.groupby(index).count()
     sns.relplot(data=time_tornadoes, x='date_time', y='count', kind='line')
     plt.xlabel(timeperiod)
-    plt.savefig(f'figures/{figname}.png', bbox_inches='tight')
+    plt.savefig(save_path, bbox_inches='tight')
 
 
-def devastation_predictions(df, quick_tune=False):
+def devastation_predictions(df, label, quick_tune=False):
     """
-    Takes in a tornado dataframe, df, and a boolean, quick_tune, and attempts
+    Takes in a tornado dataframe, df, a label to predict, label,
+    and a boolean, quick_tune, and attempts
     to predict various devastation metrics about a tornado based on the
     tornado dataset. Uses and trains multiple kinds of machine learning models
     to see which one can best predict these metrics. Writes model accuracy
@@ -103,11 +107,13 @@ def devastation_predictions(df, quick_tune=False):
     """
     tornadoes = pd.DataFrame(df)
     tornadoes.index = range(len(tornadoes.index))
+    feature_cols = [x for x in DEVASTATION_FEATURES if x != label]
     tornadoes[DEVASTATION_FEATURES] = \
         tornadoes[DEVASTATION_FEATURES].astype(float)
-    features = tornadoes[DEVASTATION_FEATURES]
-    tornadoes[['inj']] = tornadoes[['inj']].astype(float)
-    labels = tornadoes[['inj']]
+    features = tornadoes[feature_cols]
+    labels = tornadoes[[label]]
+    print(features.columns)
+    print(labels.columns)
     features_train, features_test, labels_train, labels_test = \
         train_test_split(features, labels, test_size=0.2)
     fit_kwargs = {
@@ -151,6 +157,7 @@ def devastation_predictions(df, quick_tune=False):
     o_sys = sys.stdout
     with open(RESULT_FILE, 'a') as f:
         sys.stdout = f
+        print('Predicting:', label, '\n')
         for result in results:
             print(f'{result[2]} - Train Accuracy,',
                   ('Tuned:' if result[1] else 'Not-Tuned:'),
@@ -247,19 +254,20 @@ def main(args):
     sys.stdout = o_sys
     poverty_and_tornadoes(census)
     plot_magnitudes(tornadoes, states, MAGNITUDES_PATH)
-    devastation_predictions(tornadoes,
-                            quick_tune=(not args[0] if len(args) == 1
-                                        else True))
+    quick_tune = (not args[0] if len(args) == 1 else True)
+    devastation_predictions(tornadoes, 'inj', quick_tune)
+    devastation_predictions(tornadoes, 'fat', quick_tune)
+    devastation_predictions(tornadoes, 'loss', quick_tune)
     tornadoes = dp.import_tornado_data(TORNADO_FILE)
     most_likely_time_period(tornadoes.index.year, 'year',
-                            'yearly', tornadoes)
+                            '../figures/yearly.png', tornadoes)
     most_likely_time_period(tornadoes.index.month, 'month',
-                            'monthly', tornadoes)
+                            '../figures/monthly.png', tornadoes)
     most_likely_time_period(tornadoes.index.week, 'week',
-                            'weekly', tornadoes)
+                            '../figures/weekly.png', tornadoes)
     most_likely_time_period(tornadoes.index.dayofyear, 'day',
-                            'daily', tornadoes)
-    plot_tornadoes_by_state(tornadoes, states)
+                            '../figures/daily.png', tornadoes)
+    plot_tornadoes_by_state(tornadoes, states, COUNT_PATH)
 
 
 if __name__ == '__main__':
