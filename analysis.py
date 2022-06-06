@@ -29,7 +29,9 @@ import tuning_args as ta
 ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 DEVASTATION_FEATURES = ['mo', 'dy', 'mag', 'stf', 'loss', 'closs', 'slat',
                         'slon', 'len', 'wid', 'fat']
+TORNADO_FILE = 'data/1950-2020_all_tornadoes.csv'
 RESULT_FILE = 'data/analysis-results.txt'
+MAGNITUDES_PATH = 'figures/magnitudes_2009-2019.png'
 
 
 def plot_tornadoes_by_state(tornadoes, states):
@@ -172,11 +174,11 @@ def fit_and_test_model(model, features_train, features_test, labels_train):
     return (train_predictions, test_predictions)
 
 
-def plot_magnitudes(df, states, years=ALL_VALID_YEARS):
+def plot_magnitudes(df, states, save_path, years=ALL_VALID_YEARS):
     """
     Takes in dataframes containing tornado information and state geometries
     and plots a graph of the magnitudes of tornadoes over the years specified
-    by the years list (default 2009-2020).
+    by the years list (default 2009-2019).
     """
     tornadoes = gpd.GeoDataFrame(df)
     tornadoes = tornadoes.query('yr in @years')
@@ -186,11 +188,10 @@ def plot_magnitudes(df, states, years=ALL_VALID_YEARS):
     plt.ylabel('Latitude')
 
     states.plot(ax=ax, color='#EEEEEE', edgecolor='black')
-
     geo_tornadoes = gpd.GeoDataFrame(data=tornadoes, geometry='start_point')
     geo_tornadoes.plot(ax=ax, column='mag', legend=True,
-                       markersize=tornadoes['mag'], vmin=0, vmax=5)
-    plt.savefig('figures/magnitudes_2009-2019.png')
+                       markersize=(tornadoes['mag'] * 3), vmin=0, vmax=5)
+    plt.savefig(save_path)
 
 
 def poverty_and_tornadoes(census):
@@ -233,7 +234,7 @@ def main(args):
     perform a complete analysis on tornadoes and extract pertinent
     information/graphs.
     """
-    tornadoes = dp.import_tornado_data()
+    tornadoes = dp.import_tornado_data(TORNADO_FILE)
     states = dp.import_state_geometries()
     census = dp.tornado_census_by_year(ALL_VALID_YEARS, tornadoes)
     o_sys = sys.stdout
@@ -244,12 +245,14 @@ def main(args):
         print('Most tornadoes in a year (year, count):',
               most_in_year(tornadoes), '\n')
     sys.stdout = o_sys
-    poverty_and_tornadoes(census, states)
-    plot_magnitudes(tornadoes, states)
+    poverty_and_tornadoes(census)
+    plot_magnitudes(tornadoes, states, MAGNITUDES_PATH)
     devastation_predictions(tornadoes,
                             quick_tune=(not args[0] if len(args) == 1
                                         else True))
-    tornadoes = dp.import_tornado_data()
+    tornadoes = dp.import_tornado_data(TORNADO_FILE)
+    most_likely_time_period(tornadoes.index.year, 'year',
+                            'yearly', tornadoes)
     most_likely_time_period(tornadoes.index.month, 'month',
                             'monthly', tornadoes)
     most_likely_time_period(tornadoes.index.week, 'week',

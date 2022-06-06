@@ -77,7 +77,7 @@ def tornado_census_by_year(years, tornadoes: pd.DataFrame):
     return result
 
 
-def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False,
+def import_tornado_data(path, hawaii=False, alaska=False, puerto_rico=False,
                         add_geometries=True, drop_dupes=True):
     """
     Reads the tornado csv dataset located at 'data/1950-2020_all_tornadoes.csv'
@@ -86,7 +86,7 @@ def import_tornado_data(hawaii=False, alaska=False, puerto_rico=False,
     for geospatial data analysis of the tornadoes. Returns the resulting
     dataframe.
     """
-    data = pd.read_csv(TORNADO_FILE, parse_dates=[['date', 'time']])
+    data = pd.read_csv(path, parse_dates=[['date', 'time']])
     data['stf'] = data['stf'].apply(lambda x: int(x))
     data['f1'] = data['f1'].apply(lambda x: int(x))
     data['yr'] = data['yr'].apply(lambda x: int(x))
