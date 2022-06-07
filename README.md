@@ -20,6 +20,7 @@ analysis. Also includes a pdf explaining the tornado dataset used
 - `testing.py`: Script that tests our functions against a smaller dataset
 - `test_data`: Directory holding test files
 - `test_figures`: Figures created by our testing script
+- `final_report.pdf`: Our report for our analysis
 
 ## Running Our Script
 ### Required Packages
