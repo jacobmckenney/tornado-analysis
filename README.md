@@ -5,6 +5,9 @@
 - Luke Sala (1838050)
 
 ## Description
+This project uses data found on https://www.spc.noaa.gov/wcm/#data about
+tornadoes from 1950-2020 to do analysis and answer questions and predict
+tornado trends.
 ### Files & Folders
 - `dataprocessing.py`: Imports, retrieves, cleans, filters, and joins datasets
 - `analysis.py`: Runs analysis on dataframes retrieved from `dataprocessing.py`
@@ -14,6 +17,9 @@ variations
 analysis. Also includes a pdf explaining the tornado dataset used
 - `figures`: Folder containing figures that are produced by running
 `analysis.py`
+- `testing.py`: Script that tests our functions against a smaller dataset
+- `test_data`: Directory holding test files
+- `test_figures`: Figures created by our testing script
 
 ## Running Our Script
 ### Required Packages
@@ -29,6 +35,7 @@ are running `analysis.py`
 - Census
 - shapely.geometry
 
+### Command Line
 Our script optionally takes in an argument via the command line which
 controls whether or not to use the full tuning parameters for tuning the
 machine learning models. If you run the script with no arguments it
