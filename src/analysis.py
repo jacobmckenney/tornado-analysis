@@ -137,7 +137,7 @@ def devastation_predictions(df, label, quick_tune=False):
     gsv.fit(features_train, labels_train)
     decision_tuned = fit_and_test_model(
         DecisionTreeRegressor(**gsv.best_params_), **fit_kwargs)
-    results.append((decision_tuned, True, 'DecisionTree'))
+    results.append((decision_tuned, True, 'DecisionTree', gsv.best_params_))
 
     kneighbors_not_tuned = fit_and_test_model(
         KNeighborsRegressor(), **fit_kwargs)
@@ -149,7 +149,7 @@ def devastation_predictions(df, label, quick_tune=False):
     kn_gsv.fit(features_train, labels_train)
     kneighbors_tuned = fit_and_test_model(
         KNeighborsRegressor(**kn_gsv.best_params_), **fit_kwargs)
-    results.append((kneighbors_tuned, True, 'KNeighbors'))
+    results.append((kneighbors_tuned, True, 'KNeighbors', kn_gsv.best_params_))
 
     lr_not_tuned = fit_and_test_model(LinearRegression(), **fit_kwargs)
     results.append((lr_not_tuned, False, 'LinearRegression'))
@@ -159,6 +159,8 @@ def devastation_predictions(df, label, quick_tune=False):
         sys.stdout = f
         print('Predicting:', label, '\n')
         for result in results:
+            if result[1]:
+                print('Best parameters:', result[3])
             print(f'{result[2]} - Train Accuracy,',
                   ('Tuned:' if result[1] else 'Not-Tuned:'),
                   mean_squared_error(result[0][0], labels_train))

@@ -1,51 +1,80 @@
-Most tornadoes in a year (year, count): (2004, 1774) 
+Most tornadoes in a year (year, count): (2004, 1774)
 
 Average median income of top 10 percent: 43810.41732283465
-Average median income of bottom 90 percent: 45184.945756780406 
+Average median income of bottom 90 percent: 45184.945756780406
 
 Average median income of top 20 percent: 43658.22244094488
-Average median income of bottom 80 percent: 45322.38139763779 
+Average median income of bottom 80 percent: 45322.38139763779
 
 Average median income of top 30 percent: 43957.465879265095
-Average median income of bottom 70 percent: 45521.05343082115 
+Average median income of bottom 70 percent: 45521.05343082115
 
 Average median income of top 40 percent: 43800.97834645669
-Average median income of bottom 60 percent: 45820.54461942257 
+Average median income of bottom 60 percent: 45820.54461942257
 
 Average median income of top 50 percent: 43965.54330708661
-Average median income of bottom 50 percent: 46067.28661417323 
+Average median income of bottom 50 percent: 46067.28661417323
 
-Average median income of top 60 percent: 44119.03608923884
-Average median income of bottom 40 percent: 46124.52755905512 
+Predicting: inj
 
-Average median income of top 70 percent: 44473.60236220472
-Average median income of bottom 30 percent: 46311.872703412075 
+DecisionTree - Train Accuracy, Not-Tuned: 8.777233806003628e-05
+DecisionTree - Test Accuracy, Not-Tuned: 246.3723864877516
 
-Average median income of top 80 percent: 44621.76525590551
-Average median income of bottom 20 percent: 46708.75787401575 
+Best parameters: {'max_depth': 7, 'max_features': 'auto', 'max_leaf_nodes': 10, 'min_samples_leaf': 1, 'min_weight_fraction_leaf': 0.1, 'splitter': 'best'}
+DecisionTree - Train Accuracy, Tuned: 313.4251948102646
+DecisionTree - Test Accuracy, Tuned: 304.9894842072457
 
-Average median income of top 90 percent: 44822.279090113734
-Average median income of bottom 10 percent: 46459.73228346457 
+KNeighbors - Train Accuracy, Not-Tuned: 149.08732918527767
+KNeighbors - Test Accuracy, Not-Tuned: 238.99529411764703
 
-Average median income of top 100 percent: 45054.62795275591
-Average median income of bottom 0 percent: nan 
+Best parameters: {'n_neighbors': 5, 'p': 5, 'weights': 'distance'}
+KNeighbors - Train Accuracy, Tuned: 8.777233806003628e-05
+KNeighbors - Test Accuracy, Tuned: 237.47226328468986
 
-Predicting: inj 
+LinearRegression - Train Accuracy, Not-Tuned: 141.37965426035794
+LinearRegression - Test Accuracy, Not-Tuned: 143.15674783914974
 
-DecisionTree - Train Accuracy, Not-Tuned: 9.752482006670697e-06
-DecisionTree - Test Accuracy, Not-Tuned: 571.7810110781713 
 
-DecisionTree - Train Accuracy, Tuned: 260.4417169000815
-DecisionTree - Test Accuracy, Tuned: 518.1900825516601 
 
-KNeighbors - Train Accuracy, Not-Tuned: 119.41448126548207
-KNeighbors - Test Accuracy, Not-Tuned: 391.9612763301606 
+Predicting: fat
 
-KNeighbors - Train Accuracy, Tuned: 9.752482006670697e-06
-KNeighbors - Test Accuracy, Tuned: 383.32944732021264 
+DecisionTree - Train Accuracy, Not-Tuned: 0.0
+DecisionTree - Test Accuracy, Not-Tuned: 1.0170853487283507
 
-LinearRegression - Train Accuracy, Not-Tuned: 115.36823580680407
-LinearRegression - Test Accuracy, Not-Tuned: 254.35343374806422 
+Best parameters: {'max_depth': 3, 'max_features': 'auto', 'max_leaf_nodes': 10, 'min_samples_leaf': 1, 'min_weight_fraction_leaf': 0.1, 'splitter': 'best'}
+DecisionTree - Train Accuracy, Tuned: 2.262955767107642
+DecisionTree - Test Accuracy, Tuned: 1.6135541023551871
+
+KNeighbors - Train Accuracy, Not-Tuned: 0.9062131112368096
+KNeighbors - Test Accuracy, Not-Tuned: 0.633715088157279
+
+Best parameters: {'n_neighbors': 10, 'p': 2, 'weights': 'distance'}
+KNeighbors - Train Accuracy, Tuned: 0.0
+KNeighbors - Test Accuracy, Tuned: 0.8134757938661851
+
+LinearRegression - Train Accuracy, Not-Tuned: 1.096401246577524
+LinearRegression - Test Accuracy, Not-Tuned: 0.5160944905236248
+
+
+
+Predicting: loss
+
+DecisionTree - Train Accuracy, Not-Tuned: 0.0004584651543817902
+DecisionTree - Test Accuracy, Not-Tuned: 214534884650988.2
+
+Best parameters: {'max_depth': 1, 'max_features': 'log2', 'max_leaf_nodes': 10, 'min_samples_leaf': 6, 'min_weight_fraction_leaf': 0.1, 'splitter': 'best'}
+DecisionTree - Train Accuracy, Tuned: 106370169306657.58
+DecisionTree - Test Accuracy, Tuned: 633250346108.3549
+
+KNeighbors - Train Accuracy, Not-Tuned: 88440371580159.22
+KNeighbors - Test Accuracy, Not-Tuned: 3123307268910.6914
+
+Best parameters: {'n_neighbors': 15, 'p': 2, 'weights': 'uniform'}
+KNeighbors - Train Accuracy, Tuned: 98754367075427.97
+KNeighbors - Test Accuracy, Tuned: 4706648189405.344
+
+LinearRegression - Train Accuracy, Not-Tuned: 105766112499970.61
+LinearRegression - Test Accuracy, Not-Tuned: 860232245075.6112
 
 
 
