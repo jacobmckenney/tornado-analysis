@@ -32,7 +32,7 @@ are running `analysis.py`
 - sys
 - os
 - sklearn
-- Census
+- Census (install with `conda install -c conda-forge census`)
 - shapely.geometry
 
 ### Command Line
