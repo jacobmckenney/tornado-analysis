@@ -14,6 +14,9 @@ variations
 analysis. Also includes a pdf explaining the tornado dataset used
 - `figures`: Folder containing figures that are produced by running
 `analysis.py`
+- `testing.py`: Script that tests our functions against a smaller dataset
+- `test_data`: Directory holding test files
+- `test_figures`: Figures created by our testing script
 
 ## Running Our Script
 ### Required Packages
