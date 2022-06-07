@@ -30,7 +30,7 @@ ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 DEVASTATION_FEATURES = ['mo', 'dy', 'mag', 'stf', 'loss', 'closs', 'slat',
                         'slon', 'len', 'wid', 'fat', 'inj']
 TORNADO_FILE = '../data/1950-2020_all_tornadoes.csv'
-RESULT_FILE = '../data/analysis-results-ammend.txt'
+RESULT_FILE = '../data/analysis-results.txt'
 MAGNITUDES_PATH = '../figures/magnitudes_2009-2019.png'
 COUNT_PATH = '../figures/tornado_count_1950-2020.png'
 
@@ -257,12 +257,12 @@ def main(args):
     with open(RESULT_FILE, 'a') as f:
         sys.stdout = f
         print('Metric: average median income:')
-    sys.stdout = f
+    sys.stdout = o_sys
     poverty_and_tornadoes(census, 'B19013_001E')
     with open(RESULT_FILE, 'a') as f:
         sys.stdout = f
-        print('Metric: Ratio of income to poverty in last 12 months:')
-    sys.stdout = f
+        print('Metric: ratio of income to poverty in last 12 months:')
+    sys.stdout = o_sys
     poverty_and_tornadoes(census, 'C17002_001E')
     plot_magnitudes(tornadoes, states, MAGNITUDES_PATH)
     quick_tune = (not args[0] if len(args) == 1 else True)
