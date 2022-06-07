@@ -1,19 +1,36 @@
 Most tornadoes in a year (year, count): (2004, 1774)
 
-Average median income of top 10 percent: 43810.41732283465
-Average median income of bottom 90 percent: 45184.945756780406
+Metric: average median income:
+Top 10 percent of counties (tornado-density): 43810.41732283465
+Bottom 90 percent of counties (tornado-density): 45184.945756780406
 
-Average median income of top 20 percent: 43658.22244094488
-Average median income of bottom 80 percent: 45322.38139763779
+Top 20 percent of counties (tornado-density): 43658.22244094488
+Bottom 80 percent of counties (tornado-density): 45322.38139763779
 
-Average median income of top 30 percent: 43957.465879265095
-Average median income of bottom 70 percent: 45521.05343082115
+Top 30 percent of counties (tornado-density): 43957.465879265095
+Bottom 70 percent of counties (tornado-density): 45521.05343082115
 
-Average median income of top 40 percent: 43800.97834645669
-Average median income of bottom 60 percent: 45820.54461942257
+Top 40 percent of counties (tornado-density): 43800.97834645669
+Bottom 60 percent of counties (tornado-density): 45820.54461942257
 
-Average median income of top 50 percent: 43965.54330708661
-Average median income of bottom 50 percent: 46067.28661417323
+Top 50 percent of counties (tornado-density): 43965.54330708661
+Bottom 50 percent of counties (tornado-density): 46067.28661417323
+
+Metric: Ratio of income to poverty in last 12 months:
+Top 10 percent of counties (tornado-density): 167466.50787401575
+Bottom 90 percent of counties (tornado-density): 92994.83639545056
+
+Top 20 percent of counties (tornado-density): 129538.07874015748
+Bottom 80 percent of counties (tornado-density): 93653.53887795276
+
+Top 30 percent of counties (tornado-density): 122989.23490813648
+Bottom 70 percent of counties (tornado-density): 95219.02305961755
+
+Top 40 percent of counties (tornado-density): 109940.51377952757
+Bottom 60 percent of counties (tornado-density): 95358.24540682415
+
+Top 50 percent of counties (tornado-density): 104755.07322834646
+Bottom 50 percent of counties (tornado-density): 95747.45748031496
 
 Predicting: inj
 

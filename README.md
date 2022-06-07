@@ -46,3 +46,4 @@ Where `python` is the path to the proper python executable for your env.
 Else just run:
 `python analysis.py`
 An example run command for our env is: `/Users/jacobmckenney/opt/anaconda3/envs/cse163/bin/python /Users/jacobmckenney/Desktop/cs/cse163/project/tornado_analysis/src/analysis.py True`
+IMPORTANT: make sure you are in the src directory under tornado-analysis when running the script

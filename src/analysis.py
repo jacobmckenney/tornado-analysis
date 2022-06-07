@@ -30,7 +30,7 @@ ALL_VALID_YEARS = [x for x in range(2009, 2020)]
 DEVASTATION_FEATURES = ['mo', 'dy', 'mag', 'stf', 'loss', 'closs', 'slat',
                         'slon', 'len', 'wid', 'fat', 'inj']
 TORNADO_FILE = '../data/1950-2020_all_tornadoes.csv'
-RESULT_FILE = '../data/analysis-results.txt'
+RESULT_FILE = '../data/analysis-results-ammend.txt'
 MAGNITUDES_PATH = '../figures/magnitudes_2009-2019.png'
 COUNT_PATH = '../figures/tornado_count_1950-2020.png'
 
@@ -203,7 +203,7 @@ def plot_magnitudes(df, states, save_path, years=ALL_VALID_YEARS):
     plt.savefig(save_path)
 
 
-def poverty_and_tornadoes(census):
+def poverty_and_tornadoes(census, column):
     """
     Takes in a tornado information dataframe combined with census data to
     try to find trends in demographic information in tornado-heavy counties.
@@ -230,10 +230,10 @@ def poverty_and_tornadoes(census):
         o_sys = sys.stdout
         with open(RESULT_FILE, 'a') as f:
             sys.stdout = f
-            print(f'Average median income of top {x} percent:',
-                  top_merged['B19013_001E'].mean())
-            print(f'Average median income of bottom {100 - x} percent:',
-                  bottom_merged['B19013_001E'].mean(), '\n')
+            print(f'Top {x} percent of counties (tornado-density):',
+                  top_merged[column].mean())
+            print(f'Bottom {100 - x} percent of counties (tornado-density):',
+                  bottom_merged[column].mean(), '\n')
             sys.stdout = o_sys
 
 
@@ -254,7 +254,16 @@ def main(args):
         print('Most tornadoes in a year (year, count):',
               most_in_year(tornadoes), '\n')
     sys.stdout = o_sys
-    poverty_and_tornadoes(census)
+    with open(RESULT_FILE, 'a') as f:
+        sys.stdout = f
+        print('Metric: average median income:')
+    sys.stdout = f
+    poverty_and_tornadoes(census, 'B19013_001E')
+    with open(RESULT_FILE, 'a') as f:
+        sys.stdout = f
+        print('Metric: Ratio of income to poverty in last 12 months:')
+    sys.stdout = f
+    poverty_and_tornadoes(census, 'C17002_001E')
     plot_magnitudes(tornadoes, states, MAGNITUDES_PATH)
     quick_tune = (not args[0] if len(args) == 1 else True)
     devastation_predictions(tornadoes, 'inj', quick_tune)
