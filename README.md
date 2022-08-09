@@ -1,8 +1,8 @@
 # Tornado Analysis
 
 ## Project Members
-- Jacob McKenney (1778020)
-- Luke Sala (1838050)
+- Jacob McKenney
+- Luke Sala
 
 ## Description
 This project uses data found on https://www.spc.noaa.gov/wcm/#data about
